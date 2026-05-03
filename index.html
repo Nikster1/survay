@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quick Community Survey — AT Libraries</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --teal: #1a6b6b;
+  --teal-light: #2a9090;
+  --teal-pale: #e6f4f4;
+  --sand: #f5f0e8;
+  --white: #ffffff;
+  --ink: #1a2e2e;
+  --mid: #5a7070;
+  --border: #c8dcdc;
+  --accent: #e07b39;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--sand);
+  color: var(--ink);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 16px 80px;
+}
+
+.card {
+  background: white;
+  border-radius: 20px;
+  max-width: 560px;
+  width: 100%;
+  overflow: hidden;
+  box-shadow: 0 4px 40px rgba(26,107,107,0.10);
+}
+
+/* HEADER */
+.card-header {
+  background: var(--teal);
+  padding: 36px 36px 28px;
+  color: white;
+}
+.card-header h1 {
+  font-family: 'Fraunces', serif;
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1.2;
+  margin-bottom: 10px;
+}
+.card-header h1 em { font-style: italic; font-weight: 400; color: #a8d8d8; }
+.card-header p {
+  font-size: 14px;
+  opacity: 0.82;
+  line-height: 1.6;
+}
+.pill {
+  display: inline-block;
+  background: rgba(255,255,255,0.15);
+  border-radius: 100px;
+  padding: 4px 14px;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+
+/* PROGRESS BAR */
+.prog-bar-wrap {
+  height: 5px;
+  background: var(--teal-pale);
+}
+.prog-bar {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 0 4px 4px 0;
+  transition: width 0.5s cubic-bezier(.4,0,.2,1);
+  width: 0%;
+}
+
+/* BODY */
+.card-body { padding: 32px 36px; }
+@media(max-width:480px) {
+  .card-header, .card-body { padding-left: 22px; padding-right: 22px; }
+}
+
+/* QUESTION */
+.question { display: none; animation: pop 0.3s ease; }
+.question.active { display: block; }
+@keyframes pop {
+  from { opacity:0; transform:translateY(10px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+.q-counter {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+.q-text {
+  font-family: 'Fraunces', serif;
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--ink);
+  margin-bottom: 24px;
+}
+
+/* SELECT / INPUTS */
+select {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+  color: var(--ink);
+  background: white;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+select:focus { border-color: var(--teal); }
+
+/* YES / NO */
+.yn-wrap { display: flex; gap: 12px; }
+.yn-btn {
+  flex: 1;
+  padding: 18px 12px;
+  border-radius: 12px;
+  border: 2px solid var(--border);
+  background: white;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s;
+  color: var(--mid);
+  text-align: center;
+}
+.yn-btn:hover { border-color: var(--teal-light); color: var(--teal); background: var(--teal-pale); }
+.yn-btn.selected { border-color: var(--teal); background: var(--teal); color: white; }
+
+/* SCALE */
+.scale-outer { display: flex; flex-direction: column; gap: 10px; }
+.scale-display {
+  text-align: center;
+  font-family: 'Fraunces', serif;
+  font-size: 56px;
+  font-weight: 600;
+  color: var(--teal);
+  line-height: 1;
+  padding: 8px 0;
+}
+.scale-display span { font-size: 20px; color: var(--mid); font-family: 'DM Sans',sans-serif; }
+input[type="range"] {
+  width: 100%;
+  accent-color: var(--teal);
+  cursor: pointer;
+  height: 6px;
+}
+.scale-ends {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--mid);
+  font-weight: 500;
+}
+.scale-pips {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 1px;
+}
+.pip { font-size: 10px; color: var(--border); width: 20px; text-align: center; }
+
+/* MULTI SELECT */
+.chips { display: flex; flex-wrap: wrap; gap: 10px; }
+.chip {
+  padding: 10px 18px;
+  border-radius: 100px;
+  border: 2px solid var(--border);
+  background: white;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--mid);
+  cursor: pointer;
+  transition: all 0.15s;
+  user-select: none;
+}
+.chip:hover { border-color: var(--teal-light); color: var(--teal); }
+.chip.selected { border-color: var(--teal); background: var(--teal-pale); color: var(--teal); }
+
+/* TEXT */
+textarea {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  color: var(--ink);
+  resize: none;
+  min-height: 100px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+textarea:focus { border-color: var(--teal); }
+
+/* NAV */
+.nav { display: flex; justify-content: flex-end; margin-top: 28px; }
+.btn-next {
+  background: var(--teal);
+  color: white;
+  border: none;
+  padding: 14px 32px;
+  border-radius: 100px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-next:hover { background: var(--teal-light); transform: translateY(-1px); }
+.btn-next:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+/* THANK YOU */
+.thankyou { display: none; text-align: center; padding: 20px 0 8px; }
+.thankyou.active { display: block; }
+.ty-circle {
+  width: 72px; height: 72px;
+  background: var(--teal-pale);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px;
+  margin: 0 auto 20px;
+  border: 2px solid var(--teal);
+}
+.thankyou h2 {
+  font-family: 'Fraunces', serif;
+  font-size: 26px;
+  color: var(--teal);
+  margin-bottom: 12px;
+}
+.thankyou p { font-size: 15px; color: var(--mid); line-height: 1.6; }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="card-header">
+    <div class="pill">3 min survey</div>
+    <h1>Help Us Build <em>Your</em><br>Community Hub</h1>
+    <p>We're creating free Assistive Technology Libraries in your area. 8 quick questions — your answers shape what we build.</p>
+  </div>
+
+  <div class="prog-bar-wrap">
+    <div class="prog-bar" id="progBar"></div>
+  </div>
+
+  <div class="card-body">
+
+    <div class="question active" data-q="1">
+      <div class="q-counter">Question 1 of 8</div>
+      <div class="q-text">Which country are you located in?</div>
+      <select id="countrySelect" onchange="document.getElementById('next1').disabled = false;">
+        <option value="" disabled selected>Select your country...</option>
+        <option value="United States">United States</option>
+        <option value="United Kingdom">United Kingdom</option>
+        <option value="Canada">Canada</option>
+        <option value="Australia">Australia</option>
+        <option value="" disabled>──────────────────</option>
+        <option value="Afghanistan">Afghanistan</option>
+        <option value="Albania">Albania</option>
+        <option value="Algeria">Algeria</option>
+        <option value="Andorra">Andorra</option>
+        <option value="Angola">Angola</option>
+        <option value="Antigua and Barbuda">Antigua and Barbuda</option>
+        <option value="Argentina">Argentina</option>
+        <option value="Armenia">Armenia</option>
+        <option value="Austria">Austria</option>
+        <option value="Azerbaijan">Azerbaijan</option>
+        <option value="Bahamas">Bahamas</option>
+        <option value="Bahrain">Bahrain</option>
+        <option value="Bangladesh">Bangladesh</option>
+        <option value="Barbados">Barbados</option>
+        <option value="Belarus">Belarus</option>
+        <option value="Belgium">Belgium</option>
+        <option value="Belize">Belize</option>
+        <option value="Benin">Benin</option>
+        <option value="Bhutan">Bhutan</option>
+        <option value="Bolivia">Bolivia</option>
+        <option value="Bosnia and Herzegovina">Bosnia and Herzegovina</option>
+        <option value="Botswana">Botswana</option>
+        <option value="Brazil">Brazil</option>
+        <option value="Brunei">Brunei</option>
+        <option value="Bulgaria">Bulgaria</option>
+        <option value="Burkina Faso">Burkina Faso</option>
+        <option value="Burundi">Burundi</option>
+        <option value="Cabo Verde">Cabo Verde</option>
+        <option value="Cambodia">Cambodia</option>
+        <option value="Cameroon">Cameroon</option>
+        <option value="Central African Republic">Central African Republic</option>
+        <option value="Chad">Chad</option>
+        <option value="Chile">Chile</option>
+        <option value="China">China</option>
+        <option value="Colombia">Colombia</option>
+        <option value="Comoros">Comoros</option>
+        <option value="Congo">Congo</option>
+        <option value="Costa Rica">Costa Rica</option>
+        <option value="Croatia">Croatia</option>
+        <option value="Cuba">Cuba</option>
+        <option value="Cyprus">Cyprus</option>
+        <option value="Czech Republic">Czech Republic</option>
+        <option value="Denmark">Denmark</option>
+        <option value="Djibouti">Djibouti</option>
+        <option value="Dominica">Dominica</option>
+        <option value="Dominican Republic">Dominican Republic</option>
+        <option value="Ecuador">Ecuador</option>
+        <option value="Egypt">Egypt</option>
+        <option value="El Salvador">El Salvador</option>
+        <option value="Equatorial Guinea">Equatorial Guinea</option>
+        <option value="Eritrea">Eritrea</option>
+        <option value="Estonia">Estonia</option>
+        <option value="Eswatini">Eswatini</option>
+        <option value="Ethiopia">Ethiopia</option>
+        <option value="Fiji">Fiji</option>
+        <option value="Finland">Finland</option>
+        <option value="France">France</option>
+        <option value="Gabon">Gabon</option>
+        <option value="Gambia">Gambia</option>
+        <option value="Georgia">Georgia</option>
+        <option value="Germany">Germany</option>
+        <option value="Ghana">Ghana</option>
+        <option value="Greece">Greece</option>
+        <option value="Grenada">Grenada</option>
+        <option value="Guatemala">Guatemala</option>
+        <option value="Guinea">Guinea</option>
+        <option value="Guinea-Bissau">Guinea-Bissau</option>
+        <option value="Guyana">Guyana</option>
+        <option value="Haiti">Haiti</option>
+        <option value="Honduras">Honduras</option>
+        <option value="Hungary">Hungary</option>
+        <option value="Iceland">Iceland</option>
+        <option value="India">India</option>
+        <option value="Indonesia">Indonesia</option>
+        <option value="Iran">Iran</option>
+        <option value="Iraq">Iraq</option>
+        <option value="Ireland">Ireland</option>
+        <option value="Israel">Israel</option>
+        <option value="Italy">Italy</option>
+        <option value="Jamaica">Jamaica</option>
+        <option value="Japan">Japan</option>
+        <option value="Jordan">Jordan</option>
+        <option value="Kazakhstan">Kazakhstan</option>
+        <option value="Kenya">Kenya</option>
+        <option value="Kiribati">Kiribati</option>
+        <option value="Korea, North">Korea, North</option>
+        <option value="Korea, South">Korea, South</option>
+        <option value="Kosovo">Kosovo</option>
+        <option value="Kuwait">Kuwait</option>
+        <option value="Kyrgyzstan">Kyrgyzstan</option>
+        <option value="Laos">Laos</option>
+        <option value="Latvia">Latvia</option>
+        <option value="Lebanon">Lebanon</option>
+        <option value="Lesotho">Lesotho</option>
+        <option value="Liberia">Liberia</option>
+        <option value="Libya">Libya</option>
+        <option value="Liechtenstein">Liechtenstein</option>
+        <option value="Lithuania">Lithuania</option>
+        <option value="Luxembourg">Luxembourg</option>
+        <option value="Madagascar">Madagascar</option>
+        <option value="Malawi">Malawi</option>
+        <option value="Malaysia">Malaysia</option>
+        <option value="Maldives">Maldives</option>
+        <option value="Mali">Mali</option>
+        <option value="Malta">Malta</option>
+        <option value="Marshall Islands">Marshall Islands</option>
+        <option value="Mauritania">Mauritania</option>
+        <option value="Mauritius">Mauritius</option>
+        <option value="Mexico">Mexico</option>
+        <option value="Micronesia">Micronesia</option>
+        <option value="Moldova">Moldova</option>
+        <option value="Monaco">Monaco</option>
+        <option value="Mongolia">Mongolia</option>
+        <option value="Montenegro">Montenegro</option>
+        <option value="Morocco">Morocco</option>
+        <option value="Mozambique">Mozambique</option>
+        <option value="Myanmar">Myanmar</option>
+        <option value="Namibia">Namibia</option>
+        <option value="Nauru">Nauru</option>
+        <option value="Nepal">Nepal</option>
+        <option value="Netherlands">Netherlands</option>
+        <option value="New Zealand">New Zealand</option>
+        <option value="Nicaragua">Nicaragua</option>
+        <option value="Niger">Niger</option>
+        <option value="Nigeria">Nigeria</option>
+        <option value="North Macedonia">North Macedonia</option>
+        <option value="Norway">Norway</option>
+        <option value="Oman">Oman</option>
+        <option value="Pakistan">Pakistan</option>
+        <option value="Palau">Palau</option>
+        <option value="Palestine">Palestine</option>
+        <option value="Panama">Panama</option>
+        <option value="Papua New Guinea">Papua New Guinea</option>
+        <option value="Paraguay">Paraguay</option>
+        <option value="Peru">Peru</option>
+        <option value="Philippines">Philippines</option>
+        <option value="Poland">Poland</option>
+        <option value="Portugal">Portugal</option>
+        <option value="Qatar">Qatar</option>
+        <option value="Romania">Romania</option>
+        <option value="Russia">Russia</option>
+        <option value="Rwanda">Rwanda</option>
+        <option value="Saint Kitts and Nevis">Saint Kitts and Nevis</option>
+        <option value="Saint Lucia">Saint Lucia</option>
+        <option value="Samoa">Samoa</option>
+        <option value="San Marino">San Marino</option>
+        <option value="Saudi Arabia">Saudi Arabia</option>
+        <option value="Senegal">Senegal</option>
+        <option value="Serbia">Serbia</option>
+        <option value="Seychelles">Seychelles</option>
+        <option value="Sierra Leone">Sierra Leone</option>
+        <option value="Singapore">Singapore</option>
+        <option value="Slovakia">Slovakia</option>
+        <option value="Slovenia">Slovenia</option>
+        <option value="Solomon Islands">Solomon Islands</option>
+        <option value="Somalia">Somalia</option>
+        <option value="South Africa">South Africa</option>
+        <option value="South Sudan">South Sudan</option>
+        <option value="Spain">Spain</option>
+        <option value="Sri Lanka">Sri Lanka</option>
+        <option value="Sudan">Sudan</option>
+        <option value="Suriname">Suriname</option>
+        <option value="Sweden">Sweden</option>
+        <option value="Switzerland">Switzerland</option>
+        <option value="Syria">Syria</option>
+        <option value="Taiwan">Taiwan</option>
+        <option value="Tajikistan">Tajikistan</option>
+        <option value="Tanzania">Tanzania</option>
+        <option value="Thailand">Thailand</option>
+        <option value="Timor-Leste">Timor-Leste</option>
+        <option value="Togo">Togo</option>
+        <option value="Tonga">Tonga</option>
+        <option value="Trinidad and Tobago">Trinidad and Tobago</option>
+        <option value="Tunisia">Tunisia</option>
+        <option value="Turkey">Turkey</option>
+        <option value="Turkmenistan">Turkmenistan</option>
+        <option value="Tuvalu">Tuvalu</option>
+        <option value="Uganda">Uganda</option>
+        <option value="Ukraine">Ukraine</option>
+        <option value="United Arab Emirates">United Arab Emirates</option>
+        <option value="Uruguay">Uruguay</option>
+        <option value="Uzbekistan">Uzbekistan</option>
+        <option value="Vanuatu">Vanuatu</option>
+        <option value="Vatican City">Vatican City</option>
+        <option value="Venezuela">Venezuela</option>
+        <option value="Vietnam">Vietnam</option>
+        <option value="Yemen">Yemen</option>
+        <option value="Zambia">Zambia</option>
+        <option value="Zimbabwe">Zimbabwe</option>
+      </select>
+      <div class="nav"><button class="btn-next" id="next1" onclick="goTo(2)" disabled>Next →</button></div>
+    </div>
+
+    <div class="question" data-q="2">
+      <div class="q-counter">Question 2 of 8</div>
+      <div class="q-text">Have you or anyone you know faced barriers to accessing Assistive Technology?</div>
+      <div class="yn-wrap">
+        <button class="yn-btn" onclick="selectYN(this,'q2')">✓ &nbsp;Yes</button>
+        <button class="yn-btn" onclick="selectYN(this,'q2')">✗ &nbsp;No</button>
+      </div>
+      <div class="nav"><button class="btn-next" id="next2" onclick="goTo(3)" disabled>Next →</button></div>
+    </div>
+
+    <div class="question" data-q="3">
+      <div class="q-counter">Question 3 of 8</div>
+      <div class="q-text">What kinds of barriers got in the way?</div>
+      <div class="chips" id="chips3">
+        <div class="chip" onclick="toggleChip(this)">Too expensive</div>
+        <div class="chip" onclick="toggleChip(this)">Didn't know where to find it</div>
+        <div class="chip" onclick="toggleChip(this)">No transportation</div>
+        <div class="chip" onclick="toggleChip(this)">Language barriers</div>
+        <div class="chip" onclick="toggleChip(this)">Insurance didn't cover it</div>
+        <div class="chip" onclick="toggleChip(this)">Long wait times</div>
+        <div class="chip" onclick="toggleChip(this)">No barriers / not applicable</div>
+      </div>
+      <div class="nav"><button class="btn-next" onclick="goTo(4)">Next →</button></div>
+    </div>
+
+    <div class="question" data-q="4">
+      <div class="q-counter">Question 4 of 8</div>
+      <div class="q-text">Have you ever used Telehealth services — like a video or phone appointment with a doctor?</div>
+      <div class="yn-wrap">
+        <button class="yn-btn" onclick="selectYN(this,'q4')">✓ &nbsp;Yes</button>
+        <button class="yn-btn" onclick="selectYN(this,'q4')">✗ &nbsp;No</button>
+      </div>
+      <div class="nav"><button class="btn-next" id="next4" onclick="goTo(5)" disabled>Next →</button></div>
+    </div>
+
+    <div class="question" data-q="5">
+      <div class="q-counter">Question 5 of 8</div>
+      <div class="q-text">On a scale of 1–10, how much do you feel you rely on Telehealth?</div>
+      <div class="scale-outer">
+        <div class="scale-display" id="scaleDisplay">5 <span>/ 10</span></div>
+        <input type="range" min="1" max="10" value="5" oninput="updateScale(this.value)">
+        <div class="scale-ends">
+          <span>Not at all</span>
+          <span>Completely rely on it</span>
+        </div>
+        <div class="scale-pips">
+          <div class="pip">1</div><div class="pip">2</div><div class="pip">3</div>
+          <div class="pip">4</div><div class="pip">5</div><div class="pip">6</div>
+          <div class="pip">7</div><div class="pip">8</div><div class="pip">9</div>
+          <div class="pip">10</div>
+        </div>
+      </div>
+      <div class="nav"><button class="btn-next" onclick="goTo(6)">Next →</button></div>
+    </div>
+
+    <div class="question" data-q="6">
+      <div class="q-counter">Question 6 of 8</div>
+      <div class="q-text">Is it common to have reliable high-speed internet access in your country?</div>
+      <div class="chips" id="chips6" style="flex-direction:column;">
+        <div class="chip" style="border-radius:12px;" onclick="selectChipSingle(this,'chips6')">Yes — it's widely available and affordable</div>
+        <div class="chip" style="border-radius:12px;" onclick="selectChipSingle(this,'chips6')">Somewhat — available in cities but not rural areas</div>
+        <div class="chip" style="border-radius:12px;" onclick="selectChipSingle(this,'chips6')">Limited — it exists but is expensive or unreliable</div>
+        <div class="chip" style="border-radius:12px;" onclick="selectChipSingle(this,'chips6')">No — reliable high-speed internet is rare</div>
+      </div>
+      <div class="nav"><button class="btn-next" id="next6" onclick="goTo(7)" disabled>Next →</button></div>
+    </div>
+
+    <div class="question" data-q="7">
+      <div class="q-counter">Question 7 of 8</div>
+      <div class="q-text">Which of the following do you feel would support you and your healthcare best?</div>
+      <div class="chips" id="chips7">
+        <div class="chip" onclick="toggleChip(this)">Borrow devices & tech</div>
+        <div class="chip" onclick="toggleChip(this)">Telehealth access station</div>
+        <div class="chip" onclick="toggleChip(this)">Tech coaching & help</div>
+        <div class="chip" onclick="toggleChip(this)">Health navigation support</div>
+        <div class="chip" onclick="toggleChip(this)">Programs for kids & youth</div>
+        <div class="chip" onclick="toggleChip(this)">Multilingual services</div>
+      </div>
+      <div class="nav"><button class="btn-next" onclick="goTo(8)">Next →</button></div>
+    </div>
+
+    <div class="question" data-q="8">
+      <div class="q-counter">Question 8 of 8</div>
+      <div class="q-text">Anything else you'd like us to know?</div>
+      <textarea id="feedback" placeholder="Your thoughts, ideas, or needs — anything goes..." aria-label="Open feedback"></textarea>
+      <div class="nav"><button class="btn-next" id="submitBtn" onclick="submitSurvey()">Submit ✓</button></div>
+    </div>
+
+    <div class="thankyou" id="thankyou">
+      <div class="ty-circle">🌱</div>
+      <h2>Thank you!</h2>
+      <p>Your answers will help us build an AT Library that truly serves this community. We're grateful for your voice.</p>
+    </div>
+
+  </div></div>
+
+<script>
+const TOTAL = 8;
+let current = 1;
+
+function goTo(n) {
+  document.querySelector(`[data-q="${current}"]`).classList.remove('active');
+  current = n;
+  document.querySelector(`[data-q="${current}"]`).classList.add('active');
+  updateBar();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function updateBar() {
+  document.getElementById('progBar').style.width = ((current - 1) / TOTAL * 100) + '%';
+}
+
+function selectYN(btn, key) {
+  btn.closest('.yn-wrap').querySelectorAll('.yn-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  const nextBtn = document.getElementById('next' + key.replace('q',''));
+  if (nextBtn) nextBtn.disabled = false;
+}
+
+function toggleChip(chip) {
+  chip.classList.toggle('selected');
+}
+
+function selectChipSingle(chip, groupId) {
+  document.getElementById(groupId).querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+  chip.classList.add('selected');
+  const nextBtn = document.getElementById('next' + groupId.replace('chips',''));
+  if (nextBtn) nextBtn.disabled = false;
+}
+
+function updateScale(v) {
+  document.getElementById('scaleDisplay').innerHTML = v + ' <span>/ 10</span>';
+}
+
+function submitSurvey() {
+  // Prevent double submissions
+  const submitBtn = document.getElementById('submitBtn');
+  submitBtn.disabled = true;
+  submitBtn.innerText = "Submitting...";
+
+  // Gather data to send
+  const data = {
+    country: document.getElementById('countrySelect').value,
+    q1_barriers: document.querySelector('[data-q="2"] .selected')?.innerText.replace(/[✓✗]\s*/g, '').trim() || "",
+    q2_types: Array.from(document.querySelectorAll('#chips3 .selected')).map(c => c.innerText).join(', '),
+    q3_telehealth: document.querySelector('[data-q="4"] .selected')?.innerText.replace(/[✓✗]\s*/g, '').trim() || "",
+    q4_reliance: document.querySelector('input[type="range"]').value,
+    q5_internet: document.querySelector('#chips6 .selected')?.innerText || "",
+    q6_support: Array.from(document.querySelectorAll('#chips7 .selected')).map(c => c.innerText).join(', '),
+    q7_feedback: document.getElementById('feedback').value
+  };
+
+  // Google Script URL
+  const scriptURL = 'https://script.google.com/macros/s/AKfycbywUo3Gdgg7wkLBjMHgq2q1JUYV4DeNaHZjsBnmSoo0XhUnsYFZ4QcOhuVSTkE1lP56Ug/exec';
+
+  // Send Data
+  fetch(scriptURL, {
+    method: 'POST',
+    mode: 'no-cors', // Bypasses CORS blocks for simple submission
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  })
+  .then(() => {
+    // Show thank you message
+    document.querySelector(`[data-q="${current}"]`).classList.remove('active');
+    document.getElementById('thankyou').classList.add('active');
+    document.getElementById('progBar').style.width = '100%';
+  })
+  .catch(error => {
+    console.error('Error!', error.message);
+    // Move to thank you state regardless so the user is not stuck
+    document.querySelector(`[data-q="${current}"]`).classList.remove('active');
+    document.getElementById('thankyou').classList.add('active');
+    document.getElementById('progBar').style.width = '100%';
+  });
+}
+</script>
+</body>
+</html>
